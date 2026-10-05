@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chronicle — Git History Analysis</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="logo">
+    <span class="logo-icon">⏱</span>
+    <span class="logo-text">Chronicle</span>
+    <span class="logo-sub">git history analysis</span>
+  </div>
+  <div class="header-actions">
+    <button id="btn-refresh" class="btn btn-secondary">↻ Refresh</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="overview">Overview</button>
+  <button class="tab" data-tab="heatmap">Heatmap</button>
+  <button class="tab" data-tab="authors">Authors</button>
+  <button class="tab" data-tab="network">Network</button>
+  <button class="tab" data-tab="files">Files</button>
+  <button class="tab" data-tab="trend">Trend</button>
+  <button class="tab" data-tab="timeline">Timeline</button>
+</nav>
+
+<main>
+  <!-- Overview Tab -->
+  <section id="tab-overview" class="tab-content active">
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Commit Activity (Monthly)</h3>
+        <canvas id="chart-monthly"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Hourly Distribution</h3>
+        <canvas id="chart-hourly"></canvas>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Top Contributors</h3>
+        <div id="top-authors-list" class="list-container"></div>
+      </div>
+      <div class="chart-card">
+        <h3>Language Mix (by commits)</h3>
+        <canvas id="chart-extensions"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Heatmap Tab -->
+  <section id="tab-heatmap" class="tab-content">
+    <div class="chart-card full-width">
+      <h3>Contribution Heatmap</h3>
+      <div class="heatmap-controls">
+        <label><input type="radio" name="heatmap-range" value="26" checked> 6 months</label>
+        <label><input type="radio" name="heatmap-range" value="52"> 1 year</label>
+        <label><input type="radio" name="heatmap-range" value="104"> 2 years</label>
+      </div>
+      <canvas id="chart-heatmap"></canvas>
+      <div class="heatmap-legend">
+        <span>Less</span>
+        <span class="heat-level l0"></span>
+        <span class="heat-level l1"></span>
+        <span class="heat-level l2"></span>
+        <span class="heat-level l3"></span>
+        <span class="heat-level l4"></span>
+        <span>More</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Authors Tab -->
+  <section id="tab-authors" class="tab-content">
+    <div class="chart-card full-width">
+      <h3>Contributors</h3>
+      <div class="table-controls">
+        <select id="author-sort">
+          <option value="commits">Sort by commits</option>
+          <option value="additions">Sort by additions</option>
+          <option value="deletions">Sort by deletions</option>
+          <option value="net_lines">Sort by net lines</option>
+          <option value="active_days">Sort by active days</option>
+        </select>
+      </div>
+      <div class="table-container">
+        <table id="authors-table">
+          <thead><tr><th>#</th><th>Author</th><th>Commits</th><th>Additions</th><th>Deletions</th><th>Net</th><th>Files</th><th>Active Days</th><th>First</th><th>Last</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Network Tab -->
+  <section id="tab-network" class="tab-content">
+    <div class="chart-card full-width">
+      <h3>Collaboration Network</h3>
+      <div class="network-info" id="network-info"></div>
+      <canvas id="chart-network"></canvas>
+    </div>
+  </section>
+
+  <!-- Files Tab -->
+  <section id="tab-files" class="tab-content">
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>File Change Bubbles</h3>
+        <canvas id="chart-bubbles"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Directory Activity</h3>
+        <canvas id="chart-directories"></canvas>
+      </div>
+    </div>
+    <div class="chart-card full-width">
+      <h3>Most Modified Files</h3>
+      <div class="table-container">
+        <table id="files-table">
+          <thead><tr><th>#</th><th>File</th><th>Commits</th><th>Additions</th><th>Deletions</th><th>Total</th><th>Churn</th><th>Authors</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trend Tab -->
+  <section id="tab-trend" class="tab-content">
+    <div class="chart-card full-width">
+      <h3>Code Size Evolution (Estimated LOC)</h3>
+      <canvas id="chart-loc"></canvas>
+    </div>
+    <div class="chart-card full-width">
+      <h3>Major Commits (by size)</h3>
+      <div class="table-container">
+        <table id="milestones-table">
+          <thead><tr><th>Date</th><th>SHA</th><th>Author</th><th>Subject</th><th>Additions</th><th>Deletions</th><th>Files</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline Tab -->
+  <section id="tab-timeline" class="tab-content">
+    <div class="chart-card full-width">
+      <h3>Commit Timeline</h3>
+      <div class="table-controls">
+        <select id="timeline-granularity">
+          <option value="monthly">Monthly</option>
+          <option value="weekly">Weekly</option>
+          <option value="daily">Daily</option>
+        </select>
+      </div>
+      <div class="table-container">
+        <table id="timeline-table">
+          <thead><tr><th>Period</th><th>Commits</th><th>Additions</th><th>Deletions</th><th>Net</th><th>Authors</th><th>Files</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Chronicle — local-first git history analysis · zero dependencies
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

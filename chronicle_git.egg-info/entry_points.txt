@@ -1,0 +1,2 @@
+[console_scripts]
+chronicle = chronicle.cli:main
